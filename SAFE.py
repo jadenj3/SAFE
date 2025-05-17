@@ -344,6 +344,7 @@ class Learner(BaseLearner):
 
     def _train(self, train_loader, test_loader, train_loader_for_CPs):
         self._network.to(self._device)
+        print(self.args)
 
         if self.args['slow_diag'] or self.args['slow_rdn'] or self.args['weg_disf'] or self.args['fast_cc'] or \
                 self.args['merge_result']:
