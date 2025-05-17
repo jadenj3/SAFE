@@ -346,8 +346,7 @@ class Learner(BaseLearner):
         self._network.to(self._device)
         print(self.args)
 
-        if self.args['slow_diag'] or self.args['slow_rdn'] or self.args['weg_disf'] or self.args['fast_cc'] or \
-                self.args['merge_result']:
+        if self.args['slow_diag'] or self.args['slow_rdn'] or self.args['weg_disf'] or self.args['fast_cc'] or self.args['merge_result']:
             if self._cur_task == 0:
                 args_ptm = {}
                 args_ptm['convnet_type'] = self.args['convnet_type'].rpartition("_")[0]  # PEFT is not used
