@@ -370,18 +370,18 @@ class Learner(BaseLearner):
             if self._cur_task == 0 and self.dil_init==False:
                 if 'ssf' in self.args['convnet_type']:
                     self.freeze_backbone(is_first_session=True)
-                if self.args["model_name"] != 'ncm':
+                if self.args["model_name"] != 'ncm': #this is called by default
                     self.show_num_params()
                     optimizer = optim.SGD([{'params':self._network.parameters()}], momentum=0.9, lr=self.args['body_lr'],weight_decay=self.weight_decay)
                     scheduler=optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=self.args['tuned_epoch'], eta_min=self.min_lr)
                     #train the PETL method for the first task:
                     logging.info("Starting PETL training on first task using "+self.args["model_name"]+" method")
                     self._init_train(train_loader, test_loader, optimizer, scheduler)
-                if not self.args['follow_epoch']:
+                if not self.args['follow_epoch']: # this is called by default
                     self.freeze_backbone()
                     print('freezed model for test')
 
-                if self.args['merge_result'] or not self.args['follow_model_ptm']:
+                if self.args['merge_result'] or not self.args['follow_model_ptm']: # this is called by default
                     self.model_branch1 = copy.deepcopy(self._network).to(self._device)
 
                 if self.args['use_RP'] and self.dil_init==False:
@@ -389,11 +389,11 @@ class Learner(BaseLearner):
                     if self.args['merge_result']:
                         self.setup_RP_branch()
                   
-            elif self._cur_task > 0 and self.dil_init==False:
+            elif self._cur_task > 0 and self.dil_init==False: # after first task
                 if self.args['follow_epoch']:
                     if 'ssf' in self.args['convnet_type']:
                         self.freeze_backbone(is_first_session=True)
-                    if self.args["model_name"] != 'ncm':
+                    if self.args["model_name"] != 'ncm': # this is called by default
                         self.show_num_params()
 
                         optimizer = optim.SGD(self._network.parameters(), momentum=0.9, lr=self.args['body_lr'],weight_decay=self.weight_decay)

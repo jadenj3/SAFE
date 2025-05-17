@@ -44,14 +44,14 @@ def _train(args):
             logging.FileHandler(filename=logfilename + ".log"),
             logging.StreamHandler(sys.stdout),
         ],
-    )
+    ) #create logging stuff
 
     logging.info('Starting new run')
     _set_random()
     _set_device(args)
     print_args(args)
 
-    model = Learner(args)
+    model = Learner(args) #create model with args, but where do you get the convnet type?
     model.dil_init=False
     if args['dataset']=='core50':
         ds='core50_s1'
