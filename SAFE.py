@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 from inc_net import ResNetCosineIncrementalNet,SimpleVitNet
 from utils.toolkit import target2onehot, tensor2numpy, accuracy
 
-num_workers = 8
+num_workers = 1
 
 class BaseLearner(object):
     def __init__(self, args):
