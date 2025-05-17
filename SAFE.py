@@ -336,40 +336,11 @@ class Learner(BaseLearner):
 
     def _train(self, train_loader, test_loader, train_loader_for_CPs):
         self._network.to(self._device)
-       
-        if self.args['slow_diag'] or self.args['slow_rdn'] or self.args['weg_disf'] or self.args['fast_cc'] or self.args['merge_result']:
-            if self._cur_task == 0:
-                args_ptm = {}
-                args_ptm['convnet_type'] = self.args['convnet_type'].rpartition("_")[0] # PEFT is not used
-                self.ptm = SimpleVitNet(args_ptm, True).to(self._device)
-                if self.args['slow_diag'] or self.args['slow_rdn']:
-                    self.ptm_statistic(train_loader_for_CPs)
-                self.ptm.eval()
-            if self._cur_task > 0:
-                if self.args['merge_result']:
-                    self.model_branch1.fc.weight.data = copy.deepcopy(self.train_fc_branch).to(device='cuda')
-                    self.model_branch1.update_fc(self._classes_seen_so_far)
-                    self.model_branch1.eval()
-                
-
-        if self._cur_task == 0 and self.args["model_name"] in ['ncm','joint_linear']:
-             self.freeze_backbone()
-        if self.args["model_name"] in ['joint_linear','joint_full']: 
-            #this branch updates using SGD on all tasks and should be using classes and does not use a RP head
-            if self.args["model_name"] =='joint_linear':
-                assert self.args['body_lr']==0.0
-            self.show_num_params()
-            optimizer = optim.SGD([{'params':self._network.convnet.parameters()},{'params':self._network.fc.parameters(),'lr':self.args['head_lr']}], 
-                                        momentum=0.9, lr=self.args['body_lr'],weight_decay=self.weight_decay)
-            scheduler=optim.lr_scheduler.MultiStepLR(optimizer,milestones=[100000])
-            logging.info("Starting joint training on all data using "+self.args["model_name"]+" method")
-            self._init_train(train_loader, test_loader, optimizer, scheduler)
-            self.show_num_params()
+        if False:
+            pass
         else:
             # this branch is either CP updates only, or SGD on a PETL method first task only
             if self._cur_task == 0 and self.dil_init==False:
-                if 'ssf' in self.args['convnet_type']:
-                    self.freeze_backbone(is_first_session=True)
                 if self.args["model_name"] != 'ncm': #this is called by default
                     self.show_num_params()
                     optimizer = optim.SGD([{'params':self._network.parameters()}], momentum=0.9, lr=self.args['body_lr'],weight_decay=self.weight_decay)
