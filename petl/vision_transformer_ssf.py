@@ -31,10 +31,9 @@ import torch.nn.functional as F
 import torch.utils.checkpoint
 
 from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
-from timm.models.helpers import build_model_with_cfg, named_apply, adapt_input_conv, resolve_pretrained_cfg, checkpoint_seq
-from timm.models.layers import DropPath, trunc_normal_, lecun_normal_, _assert
-from timm.layers.helpers import to_2tuple
-from timm.models.registry import register_model
+from timm.models import build_model_with_cfg, named_apply, adapt_input_conv, resolve_pretrained_cfg, checkpoint_seq
+from timm.layers import DropPath, trunc_normal_, lecun_normal_, _assert, to_2tuple
+from timm.models import register_model
 
 
 
@@ -731,11 +730,17 @@ def _create_vision_transformer(variant, pretrained=False, **kwargs):
         raise RuntimeError('features_only not implemented for Vision Transformer models.')
 
     pretrained_cfg = resolve_pretrained_cfg(variant, pretrained_cfg=kwargs.pop('pretrained_cfg', None))
+    # Determine pretrained_custom_load based on pretrained_cfg.url
+    custom_load = 'npz' in pretrained_cfg.url if pretrained_cfg and hasattr(pretrained_cfg, 'url') and pretrained_cfg.url else False
+    
+    # Ensure pretrained_custom_load is not in kwargs when calling VisionTransformer
+    kwargs.pop('pretrained_custom_load', None)
+
     model = build_model_with_cfg(
         VisionTransformer, variant, pretrained,
         pretrained_cfg=pretrained_cfg,
         pretrained_filter_fn=checkpoint_filter_fn,
-        pretrained_custom_load='npz' in pretrained_cfg.url,
+        pretrained_custom_load=custom_load,  # Pass as a direct argument
         **kwargs)
     return model
 
