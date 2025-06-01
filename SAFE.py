@@ -161,7 +161,7 @@ class Learner(BaseLearner):
             self.ptm_mean.append(Features_f[data_index].mean(0))
             self.ptm_var.append(Features_f[data_index].var(dim=0, keepdim=True))
             self.ptm_std.append(Features_f[data_index].std(dim=0, keepdim=True))
-            deviation = Features_f[data_index] - self.ptm_mean[class_index]
+            deviation = Features_f - self.ptm_mean[class_index]
             cov = torch.matmul(deviation.T, deviation) / (Features_f.size(0) - 1)
             self.ptm_cov.append(cov)
  
